@@ -4,6 +4,19 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
+from cnn import ConvNeuralNet
+from linear import NeuralNetwork
+
+
+# Weights and Biases
+'''import wandb
+wandb.init(project="MNISTv2")'''
+
+"""wandb.config = {
+  "learning_rate": 0.001,
+  "epochs": 50,
+  "batch_size": 64
+}"""
 
 
 # Download training data from open datasets. 
@@ -27,7 +40,7 @@ test_data = datasets.MNIST(
 # Hyperparameters
 learning_rate = 1e-3
 batch_size = 64
-epochs = 50
+epochs = 100
 
 
 # Create data loaders.
@@ -40,34 +53,9 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
 
-# ~~ Model ~~
-class NeuralNetwork(nn.Module):
-    def __init__(self):
-        super().__init__()
-        
-        input = 28*28
-        hidden = 512
-        output = 10
-
-        self.flatten = nn.Flatten()
-        self.layers = nn.Sequential(
-            nn.Linear(input, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, output)
-        )
-
-    # Forward Pass
-    def forward(self, x):
-        x = self.flatten(x)
-        out = self.layers(x)
-        return out
-
-model = NeuralNetwork().to(device)
-model.load_state_dict(torch.load("models/model.pth"))
+# Call Neural Network and load model state
+model = ConvNeuralNet().to(device)
+# model.load_state_dict(torch.load("models/model3.pth"))
 
 
 # Optimizer & Loss Function
@@ -97,6 +85,11 @@ def train_loop(dataloader, model, loss_fn, optimizer):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 
+        # Weights and Biases
+        '''wandb.log({"loss": loss})
+        wandb.watch(model)'''
+
+
 # Test Loop
 def test_loop(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
@@ -123,7 +116,7 @@ def training():
         print(f"Epoch {epoch+1}\n-------------------------------")
         train_loop(train_dataloader, model, loss_fn, optimizer)
         test_loop(test_dataloader, model, loss_fn)
-        torch.save(model.state_dict(), "models/model.pth")
+        # torch.save(model.state_dict(), "models/model3.pth")
     print("Done!")
 
 if __name__ == "__main__":
