@@ -9,8 +9,8 @@ from linear import NeuralNetwork
 
 
 # Weights and Biases
-'''import wandb
-wandb.init(project="MNISTv2")'''
+import wandb
+wandb.init(project="MNISTv2")
 
 """wandb.config = {
   "learning_rate": 0.001,
@@ -59,7 +59,7 @@ model = ConvNeuralNet().to(device)
 
 
 # Optimizer & Loss Function
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 loss_fn = nn.CrossEntropyLoss()
 
 
@@ -86,8 +86,8 @@ def train_loop(dataloader, model, loss_fn, optimizer):
 
 
         # Weights and Biases
-        '''wandb.log({"loss": loss})
-        wandb.watch(model)'''
+        wandb.log({"loss": loss})
+        wandb.watch(model)
 
 
 # Test Loop
@@ -116,7 +116,7 @@ def training():
         print(f"Epoch {epoch+1}\n-------------------------------")
         train_loop(train_dataloader, model, loss_fn, optimizer)
         test_loop(test_dataloader, model, loss_fn)
-        # torch.save(model.state_dict(), "models/model3.pth")
+        torch.save(model.state_dict(), "models/model_cnn_dropout.pth")
     print("Done!")
 
 if __name__ == "__main__":
